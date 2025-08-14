@@ -1,7 +1,8 @@
 import React from 'react';
-import { Grid, Paper, Typography } from '@mui/material';
+import { Grid, Paper, Typography, Divider } from '@mui/material';
 import Actionsbar from '../components/Actionsbar';
 import LogAction from '../components/LogAction';
+import LogList from '../components/LogList';
 
 const ActionPage = () => (
     <Grid container spacing={2}>
@@ -16,6 +17,11 @@ const ActionPage = () => (
                     Log Your Actions
                 </Typography>
                 <LogAction />
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                    Logged Actions
+                </Typography>
+                <LogList />
             </Paper>
         </Grid>
     </Grid>

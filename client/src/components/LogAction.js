@@ -8,7 +8,10 @@ const LogAction = () => {
 
     const handleLog = () => {
         if (selectedAction !== null) {
-            setLogs([...logs, { actionId: selectedAction, timestamp: new Date().toISOString() }]);
+            setLogs([
+                ...logs,
+                { id: Date.now(), actionId: selectedAction, timestamp: new Date().toISOString() }
+            ]);
             setSelectedAction(null);
         }
     };

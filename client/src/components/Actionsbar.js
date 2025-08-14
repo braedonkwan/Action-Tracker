@@ -5,7 +5,7 @@ import { List, ListItem, ListItemText, IconButton, Divider, Typography, Box } fr
 import { Edit, Delete } from '@mui/icons-material';
 
 const Actionsbar = () => {
-    const { actions, setActions } = useContext(DataContext);
+    const { actions, setActions, logs, setLogs } = useContext(DataContext);
     const [editAction, setEditAction] = useState(null);
 
     const handleSave = (action) => {
@@ -22,7 +22,10 @@ const Actionsbar = () => {
     };
 
     const handleDelete = (id) => {
+        // Remove the action
         setActions(actions.filter((a) => a.id !== id));
+        // Remove any logs associated with this action
+        setLogs(logs.filter((log) => log.actionId !== id));
         if (editAction && editAction.id === id) setEditAction(null);
     };
 

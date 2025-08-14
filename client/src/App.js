@@ -19,7 +19,8 @@ function App() {
       const storedActions = await getLocalData('actions');
       const storedLogs = await getLocalData('logs');
       setActions(storedActions || []);
-      setLogs(storedLogs || []);
+      const now = Date.now();
+      setLogs((storedLogs || []).map((log, index) => ({ id: log.id ?? now + index, ...log })));
       setIsDataLoaded(true);
     })();
   }, []);
