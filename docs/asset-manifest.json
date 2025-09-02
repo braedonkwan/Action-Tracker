@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.js": "/static/js/main.298e3cfe.js",
-    "service-worker.js": "/service-worker.js",
-    "index.html": "/index.html",
-    "main.298e3cfe.js.map": "/static/js/main.298e3cfe.js.map"
+    "main.js": "/Action-Tracker/static/js/main.90ecf62a.js",
+    "service-worker.js": "/Action-Tracker/service-worker.js",
+    "index.html": "/Action-Tracker/index.html",
+    "main.90ecf62a.js.map": "/Action-Tracker/static/js/main.90ecf62a.js.map"
   },
   "entrypoints": [
-    "static/js/main.298e3cfe.js"
+    "static/js/main.90ecf62a.js"
   ]
 }
