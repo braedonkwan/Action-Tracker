@@ -1,22 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, RadioGroup, FormControlLabel, Radio, Box } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { TextField, Button, Box } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import { DataContext } from '../context/DataContext';
 
 const ActionForm = ({ onSave, editAction, onCancel }) => {
+    const { categories, setCategories } = useContext(DataContext);
     const [name, setName] = useState('');
-    const [category, setCategory] = useState('Good');
+    const [category, setCategory] = useState('');
 
     useEffect(() => {
         if (editAction) {
             setName(editAction.name);
-            setCategory(editAction.category);
+            setCategory(editAction.category || '');
+        } else {
+            // do not default to any category
+            setCategory('');
         }
     }, [editAction]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ name, category, id: editAction ? editAction.id : Date.now() });
+        const trimmedName = name.trim();
+        const trimmedCategory = (category || '').toString().trim();
+        if (!trimmedName || !trimmedCategory) return;
+
+        onSave({ name: trimmedName, category: trimmedCategory, id: editAction ? editAction.id : Date.now() });
+
+        // ensure category exists for filtering elsewhere
+        if (!categories.includes(trimmedCategory)) {
+            setCategories([...categories, trimmedCategory]);
+        }
         setName('');
-        setCategory('Good');
+        setCategory('');
     };
 
     return (
@@ -30,10 +45,23 @@ const ActionForm = ({ onSave, editAction, onCancel }) => {
                 required
                 sx={{ mb: 2 }}
             />
-            <RadioGroup row value={category} onChange={(e) => setCategory(e.target.value)}>
-                <FormControlLabel value="Good" control={<Radio />} label="Good" />
-                <FormControlLabel value="Bad" control={<Radio />} label="Bad" />
-            </RadioGroup>
+            <Autocomplete
+                freeSolo
+                options={categories}
+                value={category}
+                onChange={(_e, newValue) => setCategory(newValue || '')}
+                inputValue={category}
+                onInputChange={(_e, newInput) => setCategory(newInput)}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Category"
+                        variant="outlined"
+                        fullWidth
+                        required
+                    />
+                )}
+            />
             <Box sx={{ mt: 2 }}>
                 <Button type="submit" variant="contained" color="primary">
                     {editAction ? 'Update Action' : 'Add Action'}

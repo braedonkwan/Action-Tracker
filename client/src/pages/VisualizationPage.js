@@ -4,19 +4,33 @@ import { DataContext } from '../context/DataContext';
 import Filters from '../components/Filter';
 import SummaryCard from '../components/SummaryCard';
 import BarGraph from '../components/BarGraph';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 
 const VisualizationPage = () => {
     const { actions, logs } = useContext(DataContext);
-    const [categories, setCategories] = useState(['Good', 'Bad']);
     const [actionFilters, setActionFilters] = useState([]);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
     const filteredLogs = useMemo(() => {
-        const filteredActions = actions.filter(a => categories.includes(a.category));
-        const actionIds = filteredActions.map(a => a.id);
-        const finalActionIds = actionFilters.length > 0 ? actionFilters : actionIds;
-        return logs.filter(log => finalActionIds.includes(log.actionId));
-    }, [actions, logs, categories, actionFilters]);
+        const allActionIds = actions.map(a => a.id);
+        const finalActionIds = actionFilters.length > 0 ? actionFilters : allActionIds;
+
+        const applyDate = (ts) => {
+            const d = parseISO(ts);
+            if (startDate) {
+                const s = startOfDay(new Date(startDate));
+                if (isBefore(d, s)) return false;
+            }
+            if (endDate) {
+                const e = endOfDay(new Date(endDate));
+                if (isAfter(d, e)) return false;
+            }
+            return true;
+        };
+
+        return logs.filter(log => finalActionIds.includes(log.actionId) && applyDate(log.timestamp));
+    }, [actions, logs, actionFilters, startDate, endDate]);
 
     const graphData = useMemo(() => {
         const dateMap = {};
@@ -24,17 +38,21 @@ const VisualizationPage = () => {
             const d = format(parseISO(log.timestamp), 'yyyy-MM-dd');
             dateMap[d] = (dateMap[d] || 0) + 1;
         });
-        return Object.entries(dateMap).map(([date, count]) => ({ date, count }));
+        return Object.entries(dateMap)
+            .map(([date, count]) => ({ date, count }))
+            .sort((a, b) => a.date.localeCompare(b.date));
     }, [filteredLogs]);
 
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Filters
-                    categories={categories}
-                    setCategories={setCategories}
                     actionFilters={actionFilters}
                     setActionFilters={setActionFilters}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
                 />
             </Grid>
             <Grid item xs={12} md={4}>

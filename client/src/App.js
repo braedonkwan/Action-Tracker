@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import ActionPage from './pages/ActionPage';
@@ -7,19 +8,42 @@ import VisualizationPage from './pages/VisualizationPage';
 import { DataContext } from './context/DataContext';
 import { getLocalData, setLocalData } from './utils/indexedDBUtil';
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: { main: '#1976d2' },
+    secondary: { main: '#9c27b0' },
+    background: { default: '#f7f9fc', paper: '#ffffff' }
+  },
+  shape: { borderRadius: 12 },
+  components: {
+    MuiPaper: { styleOverrides: { root: { borderRadius: 12 } } },
+    MuiAppBar: { styleOverrides: { root: { borderRadius: 0 } } }
+  }
+});
 
 function App() {
   const [actions, setActions] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
       const storedActions = await getLocalData('actions');
       const storedLogs = await getLocalData('logs');
+      const storedCategories = await getLocalData('categories');
+
       setActions(storedActions || []);
       setLogs(storedLogs || []);
+
+      let initialCategories = storedCategories;
+      if (!initialCategories || initialCategories.length === 0) {
+        const derived = Array.from(new Set((storedActions || []).map(a => a.category).filter(Boolean)));
+        initialCategories = derived; // do not seed defaults
+      }
+      setCategories(initialCategories);
+
       setIsDataLoaded(true);
     })();
   }, []);
@@ -32,10 +56,25 @@ function App() {
     if (isDataLoaded) setLocalData('logs', logs);
   }, [logs, isDataLoaded]);
 
-  const value = useMemo(() => ({ actions, setActions, logs, setLogs }), [actions, logs]);
+  useEffect(() => {
+    if (isDataLoaded) setLocalData('categories', categories);
+  }, [categories, isDataLoaded]);
+
+  // Prune categories that have no associated actions
+  useEffect(() => {
+    if (!isDataLoaded) return;
+    const setFromActions = Array.from(new Set(actions.map(a => a.category).filter(Boolean)));
+    const equal = setFromActions.length === categories.length && setFromActions.every(c => categories.includes(c));
+    if (!equal) {
+      setCategories(setFromActions);
+    }
+  }, [actions, isDataLoaded]);
+
+  const value = useMemo(() => ({ actions, setActions, logs, setLogs, categories, setCategories }), [actions, logs, categories]);
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
         <AppBar position="static">
           <Toolbar>

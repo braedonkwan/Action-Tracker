@@ -1,28 +1,33 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { DataContext } from '../context/DataContext';
 import { Box, FormControl, InputLabel, Select, MenuItem, Button, ListSubheader } from '@mui/material';
 
 const LogAction = () => {
-    const { actions, logs, setLogs } = useContext(DataContext);
+    const { actions, logs, setLogs, categories } = useContext(DataContext);
     const [selectedAction, setSelectedAction] = useState(null);
 
     const handleLog = () => {
         if (selectedAction !== null) {
-            setLogs([...logs, { actionId: selectedAction, timestamp: new Date().toISOString() }]);
+            setLogs([...logs, { id: Date.now(), actionId: selectedAction, timestamp: new Date().toISOString() }]);
             setSelectedAction(null);
         }
     };
 
-    const goodActions = actions
-        .filter((a) => a.category === 'Good')
-        .sort((a, b) => a.name.localeCompare(b.name));
-    const badActions = actions
-        .filter((a) => a.category === 'Bad')
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const grouped = useMemo(() => {
+        const map = {};
+        (categories.length ? categories : Array.from(new Set(actions.map(a => a.category)))).forEach(c => { map[c] = []; });
+        actions.forEach(a => {
+            const c = a.category || 'Uncategorized';
+            if (!map[c]) map[c] = [];
+            map[c].push(a);
+        });
+        Object.values(map).forEach(arr => arr.sort((a, b) => a.name.localeCompare(b.name)));
+        return map;
+    }, [actions, categories]);
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormControl sx={{ minWidth: 200 }}>
+            <FormControl sx={{ minWidth: 220 }}>
                 <InputLabel id="action-select-label">Select Action</InputLabel>
                 <Select
                     labelId="action-select-label"
@@ -30,22 +35,16 @@ const LogAction = () => {
                     label="Select Action"
                     onChange={(e) => setSelectedAction(Number(e.target.value))}
                 >
-                    {goodActions.length > 0 && [
-                        <ListSubheader key="good-header">Good</ListSubheader>,
-                        ...goodActions.map((a) => (
-                            <MenuItem key={a.id} value={a.id}>
-                                {a.name}
-                            </MenuItem>
-                        ))
-                    ]}
-                    {badActions.length > 0 && [
-                        <ListSubheader key="bad-header">Bad</ListSubheader>,
-                        ...badActions.map((a) => (
-                            <MenuItem key={a.id} value={a.id}>
-                                {a.name}
-                            </MenuItem>
-                        ))
-                    ]}
+                    {Object.entries(grouped).map(([cat, arr]) => (
+                        arr.length > 0 ? (
+                            [
+                                <ListSubheader key={`header-${cat}`}>{cat}</ListSubheader>,
+                                ...arr.map(a => (
+                                    <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>
+                                ))
+                            ]
+                        ) : null
+                    ))}
                 </Select>
             </FormControl>
             <Button variant="contained" onClick={handleLog}>

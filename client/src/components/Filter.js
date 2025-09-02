@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { DataContext } from '../context/DataContext';
 import {
     Box,
@@ -8,39 +8,49 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
-    ListSubheader
+    ListSubheader,
+    TextField
 } from '@mui/material';
 
-const Filter = ({ actionFilters, setActionFilters }) => {
+const Filter = ({
+    actionFilters,
+    setActionFilters,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate
+}) => {
     const { actions } = useContext(DataContext);
-    const categories = ['Good', 'Bad'];
 
-    const groupedActions = categories.map((category) => ({
-        category,
-        actions: actions.filter((a) => a.category === category)
-    }));
+    const groupedActions = useMemo(() => {
+        const cats = Array.from(new Set(actions.map(a => a.category || 'Uncategorized')));
+        return cats.map((category) => ({
+            category,
+            actions: actions.filter((a) => (a.category || 'Uncategorized') === category)
+        }));
+    }, [actions]);
 
-    const handleChange = (event) => {
+    const handleActionChange = (event) => {
         const value = event.target.value;
         setActionFilters(Array.isArray(value) ? value : []);
     };
 
-    const renderValue = (selected) =>
+    const renderActionsValue = (selected) =>
         selected
             .map((id) => actions.find((a) => a.id === id))
             .filter(Boolean)
             .map((a) => a.name)
             .join(', ');
 
-    const menuItems = [];
+    const actionMenuItems = [];
     groupedActions.forEach(({ category, actions: catActions }) => {
-        menuItems.push(
+        actionMenuItems.push(
             <ListSubheader key={`header-${category}`} sx={{ pointerEvents: 'none' }}>
                 {category}
             </ListSubheader>
         );
         catActions.forEach((a) => {
-            menuItems.push(
+            actionMenuItems.push(
                 <MenuItem key={a.id} value={a.id}>
                     <Checkbox checked={actionFilters.includes(a.id)} />
                     <ListItemText primary={a.name} />
@@ -50,20 +60,36 @@ const Filter = ({ actionFilters, setActionFilters }) => {
     });
 
     return (
-        <Box sx={{ display: 'flex', gap: 4, mb: 2 }}>
-            <FormControl sx={{ minWidth: 200 }}>
-                <InputLabel id="combined-filter-label">Filters</InputLabel>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 2 }}>
+            <FormControl sx={{ minWidth: 240 }}>
+                <InputLabel id="action-filter-label">Actions</InputLabel>
                 <Select
-                    labelId="combined-filter-label"
+                    labelId="action-filter-label"
                     multiple
                     value={actionFilters}
-                    onChange={handleChange}
-                    renderValue={renderValue}
-                    label="Filters"
+                    onChange={handleActionChange}
+                    renderValue={renderActionsValue}
+                    label="Actions"
                 >
-                    {menuItems}
+                    {actionMenuItems}
                 </Select>
             </FormControl>
+
+            <TextField
+                label="Start date"
+                type="date"
+                value={startDate || ''}
+                onChange={(e) => setStartDate(e.target.value || null)}
+                InputLabelProps={{ shrink: true }}
+            />
+
+            <TextField
+                label="End date"
+                type="date"
+                value={endDate || ''}
+                onChange={(e) => setEndDate(e.target.value || null)}
+                InputLabelProps={{ shrink: true }}
+            />
         </Box>
     );
 };

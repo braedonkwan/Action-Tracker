@@ -4,5 +4,7 @@ export const DataContext = createContext({
   actions: [],
   setActions: () => {},
   logs: [],
-  setLogs: () => {}
+  setLogs: () => {},
+  categories: [],
+  setCategories: () => {}
 });

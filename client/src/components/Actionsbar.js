@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { DataContext } from '../context/DataContext';
 import ActionForm from './ActionForm';
-import { List, ListItem, ListItemText, IconButton, Divider, Typography, Box } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Divider, Typography, Box, Tooltip } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const Actionsbar = () => {
-    const { actions, setActions } = useContext(DataContext);
+    const { actions, setActions, logs, setLogs, categories, setCategories } = useContext(DataContext);
     const [editAction, setEditAction] = useState(null);
 
     const handleSave = (action) => {
@@ -15,6 +15,9 @@ const Actionsbar = () => {
         } else {
             setActions([...actions, action]);
         }
+        if (action.category && !categories.includes(action.category)) {
+            setCategories([...categories, action.category]);
+        }
     };
 
     const handleEdit = (action) => {
@@ -22,7 +25,10 @@ const Actionsbar = () => {
     };
 
     const handleDelete = (id) => {
+        // remove the action
         setActions(actions.filter((a) => a.id !== id));
+        // cascade delete logs tied to this action
+        setLogs(logs.filter((l) => l.actionId !== id));
         if (editAction && editAction.id === id) setEditAction(null);
     };
 
@@ -37,12 +43,16 @@ const Actionsbar = () => {
                         key={action.id}
                         secondaryAction={
                             <Box>
-                                <IconButton edge="end" onClick={() => handleEdit(action)}>
-                                    <Edit />
-                                </IconButton>
-                                <IconButton edge="end" onClick={() => handleDelete(action.id)}>
-                                    <Delete />
-                                </IconButton>
+                                <Tooltip title="Edit">
+                                    <IconButton edge="end" onClick={() => handleEdit(action)}>
+                                        <Edit />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete action and its logs">
+                                    <IconButton edge="end" color="error" onClick={() => handleDelete(action.id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </Tooltip>
                             </Box>
                         }
                     >
