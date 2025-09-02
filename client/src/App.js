@@ -68,14 +68,28 @@ function App() {
     if (!equal) {
       setCategories(setFromActions);
     }
-  }, [actions, isDataLoaded]);
+  }, [actions, categories, isDataLoaded]);
 
   const value = useMemo(() => ({ actions, setActions, logs, setLogs, categories, setCategories }), [actions, logs, categories]);
+
+  // Derive basename from PUBLIC_URL so Links don't jump to domain root
+  const basename = (() => {
+    const pub = process.env.PUBLIC_URL;
+    if (!pub) return undefined;
+    try {
+      const url = new URL(pub, window.location.origin);
+      // Ensure no trailing slash for react-router basename
+      return url.pathname.replace(/\/$/, '');
+    } catch {
+      // Fallback: attempt to treat as path
+      return pub.replace(/https?:\/\/[^/]+/, '').replace(/\/$/, '');
+    }
+  })();
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router basename={basename}>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
