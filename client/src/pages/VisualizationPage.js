@@ -26,18 +26,20 @@ const VisualizationPage = () => {
     }, [filteredLogs]);
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
             <Grid item xs={12}>
-                <Filters
-                    actionFilters={actionFilters}
-                    setActionFilters={setActionFilters}
-                />
+                <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 2 }}>
+                    <Filters
+                        actionFilters={actionFilters}
+                        setActionFilters={setActionFilters}
+                    />
+                </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
                 <SummaryCard filteredLogs={filteredLogs} />
             </Grid>
             <Grid item xs={12} md={8}>
-                <Paper sx={{ p: 2 }}>
+                <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
                     <Typography variant="h6" gutterBottom>Actions per Day</Typography>
                     <BarGraph data={graphData} />
                 </Paper>

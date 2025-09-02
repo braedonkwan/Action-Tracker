@@ -8,13 +8,13 @@ import {
     MenuItem,
     Button,
     ListSubheader,
-    List,
     ListItem,
     ListItemText,
     IconButton
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
+import { FixedSizeList } from 'react-window';
 
 const LogAction = () => {
     const { actions, logs, setLogs } = useContext(DataContext);
@@ -43,6 +43,28 @@ const LogAction = () => {
 
     const sortedLogs = [...logs].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
+    const Row = ({ index, style }) => {
+        const log = sortedLogs[index];
+        const action = actions.find((a) => a.id === log.actionId);
+        const logKey = log.id ?? log.timestamp;
+        return (
+            <ListItem
+                style={style}
+                key={logKey}
+                secondaryAction={
+                    <IconButton edge="end" onClick={() => handleDelete(logKey)}>
+                        <Delete />
+                    </IconButton>
+                }
+            >
+                <ListItemText
+                    primary={action ? action.name : 'Unknown Action'}
+                    secondary={format(parseISO(log.timestamp), 'PPpp')}
+                />
+            </ListItem>
+        );
+    };
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -70,24 +92,15 @@ const LogAction = () => {
                     Log Action
                 </Button>
             </Box>
-            <List>
-                {sortedLogs.map((log) => {
-                    const action = actions.find((a) => a.id === log.actionId);
-                    const logKey = log.id ?? log.timestamp;
-                    return (
-                        <ListItem key={logKey} secondaryAction={
-                            <IconButton edge="end" onClick={() => handleDelete(logKey)}>
-                                <Delete />
-                            </IconButton>
-                        }>
-                            <ListItemText
-                                primary={action ? action.name : 'Unknown Action'}
-                                secondary={format(parseISO(log.timestamp), 'PPpp')}
-                            />
-                        </ListItem>
-                    );
-                })}
-            </List>
+            <FixedSizeList
+                height={400}
+                width="100%"
+                itemSize={72}
+                itemCount={sortedLogs.length}
+                overscanCount={5}
+            >
+                {Row}
+            </FixedSizeList>
         </Box>
     );
 };

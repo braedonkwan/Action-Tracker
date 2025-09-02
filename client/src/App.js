@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Box, AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button, Container, CssBaseline } from '@mui/material';
 import ActionPage from './pages/ActionPage';
 import VisualizationPage from './pages/VisualizationPage';
 import { DataContext } from './context/DataContext';
@@ -9,11 +9,13 @@ import { getLocalData, setLocalData } from './utils/indexedDBUtil';
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#1976d2' },
-    secondary: { main: '#9c27b0' },
-    background: { default: '#f5f5f5' }
+    primary: { main: '#4a90e2' },
+    secondary: { main: '#ff6f61' }
   },
-  shape: { borderRadius: 8 }
+  shape: { borderRadius: 8 },
+  typography: {
+    fontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'
+  }
 });
 
 function App() {
@@ -43,6 +45,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
         <AppBar position="static">
           <Toolbar>
@@ -53,7 +56,7 @@ function App() {
             <Button color="inherit" component={Link} to="/visualize">Visualize</Button>
           </Toolbar>
         </AppBar>
-        <Box sx={{ backgroundColor: 'background.default', minHeight: '100vh' }}>
+        <Box sx={{ minHeight: '100vh' }}>
           <Container sx={{ py: 2 }}>
             <DataContext.Provider value={value}>
               <Routes>

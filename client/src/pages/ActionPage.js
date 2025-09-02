@@ -4,14 +4,14 @@ import Actionsbar from '../components/Actionsbar';
 import LogAction from '../components/LogAction';
 
 const ActionPage = () => (
-    <Grid container spacing={2}>
+    <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2 }}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
                 <Actionsbar />
             </Paper>
         </Grid>
         <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2 }}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Log Your Actions
                 </Typography>
