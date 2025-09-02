@@ -1,13 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button, CssBaseline } from '@mui/material';
 import ActionPage from './pages/ActionPage';
 import VisualizationPage from './pages/VisualizationPage';
 import { DataContext } from './context/DataContext';
 import { getLocalData, setLocalData } from './utils/indexedDBUtil';
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    primary: { main: '#1976d2' },
+    secondary: { main: '#9c27b0' }
+  }
+});
 
 function App() {
   const [actions, setActions] = useState([]);
@@ -36,8 +41,9 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
-        <AppBar position="static">
+        <AppBar position="static" color="primary" enableColorOnDark>
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               Action Tracker

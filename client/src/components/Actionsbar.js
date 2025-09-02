@@ -1,12 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { DataContext } from '../context/DataContext';
 import ActionForm from './ActionForm';
 import { List, ListItem, ListItemText, IconButton, Divider, Typography, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const Actionsbar = () => {
-    const { actions, setActions } = useContext(DataContext);
+    const { actions, setActions, logs, setLogs } = useContext(DataContext);
     const [editAction, setEditAction] = useState(null);
+
+    const categories = useMemo(() => Array.from(new Set(actions.map(a => a.category))), [actions]);
 
     const handleSave = (action) => {
         if (editAction) {
@@ -23,13 +25,19 @@ const Actionsbar = () => {
 
     const handleDelete = (id) => {
         setActions(actions.filter((a) => a.id !== id));
+        setLogs(logs.filter((l) => l.actionId !== id));
         if (editAction && editAction.id === id) setEditAction(null);
     };
 
     return (
         <Box>
             <Typography variant="h6" gutterBottom>Manage Actions</Typography>
-            <ActionForm onSave={handleSave} editAction={editAction} onCancel={() => setEditAction(null)} />
+            <ActionForm
+                onSave={handleSave}
+                editAction={editAction}
+                onCancel={() => setEditAction(null)}
+                existingCategories={categories}
+            />
             <Divider sx={{ my: 2 }} />
             <List>
                 {actions.map((action) => (
