@@ -13,7 +13,8 @@ import {
 
 const Filter = ({ actionFilters, setActionFilters }) => {
     const { actions } = useContext(DataContext);
-    const categories = ['Good', 'Bad'];
+
+    const categories = [...new Set(actions.map((a) => a.category))].sort();
 
     const groupedActions = categories.map((category) => ({
         category,

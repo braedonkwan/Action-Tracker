@@ -8,15 +8,13 @@ import { format, parseISO } from 'date-fns';
 
 const VisualizationPage = () => {
     const { actions, logs } = useContext(DataContext);
-    const [categories, setCategories] = useState(['Good', 'Bad']);
     const [actionFilters, setActionFilters] = useState([]);
 
     const filteredLogs = useMemo(() => {
-        const filteredActions = actions.filter(a => categories.includes(a.category));
-        const actionIds = filteredActions.map(a => a.id);
+        const actionIds = actions.map(a => a.id);
         const finalActionIds = actionFilters.length > 0 ? actionFilters : actionIds;
         return logs.filter(log => finalActionIds.includes(log.actionId));
-    }, [actions, logs, categories, actionFilters]);
+    }, [actions, logs, actionFilters]);
 
     const graphData = useMemo(() => {
         const dateMap = {};
@@ -31,8 +29,6 @@ const VisualizationPage = () => {
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Filters
-                    categories={categories}
-                    setCategories={setCategories}
                     actionFilters={actionFilters}
                     setActionFilters={setActionFilters}
                 />

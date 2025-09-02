@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, RadioGroup, FormControlLabel, Radio, Box } from '@mui/material';
+import { TextField, Button, Box } from '@mui/material';
 
 const ActionForm = ({ onSave, editAction, onCancel }) => {
     const [name, setName] = useState('');
-    const [category, setCategory] = useState('Good');
+    const [category, setCategory] = useState('');
 
     useEffect(() => {
         if (editAction) {
@@ -14,9 +14,9 @@ const ActionForm = ({ onSave, editAction, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ name, category, id: editAction ? editAction.id : Date.now() });
+        onSave({ name, category: category || 'Uncategorized', id: editAction ? editAction.id : Date.now() });
         setName('');
-        setCategory('Good');
+        setCategory('');
     };
 
     return (
@@ -30,10 +30,15 @@ const ActionForm = ({ onSave, editAction, onCancel }) => {
                 required
                 sx={{ mb: 2 }}
             />
-            <RadioGroup row value={category} onChange={(e) => setCategory(e.target.value)}>
-                <FormControlLabel value="Good" control={<Radio />} label="Good" />
-                <FormControlLabel value="Bad" control={<Radio />} label="Bad" />
-            </RadioGroup>
+            <TextField
+                label="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                variant="outlined"
+                fullWidth
+                required
+                sx={{ mb: 2 }}
+            />
             <Box sx={{ mt: 2 }}>
                 <Button type="submit" variant="contained" color="primary">
                     {editAction ? 'Update Action' : 'Add Action'}
