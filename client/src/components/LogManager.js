@@ -117,7 +117,7 @@ const LogManager = () => {
       {Object.entries(logsByMonthDayCategory)
         .sort(([ma], [mb]) => parse(mb, 'MMMM yyyy', new Date()) - parse(ma, 'MMMM yyyy', new Date()))
         .map(([monthLabel, days]) => (
-        <Accordion key={monthLabel} defaultExpanded>
+        <Accordion key={monthLabel}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography fontWeight={600}>{monthLabel}</Typography>
           </AccordionSummary>

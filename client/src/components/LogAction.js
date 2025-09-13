@@ -74,9 +74,23 @@ const LogAction = () => {
     }, [selectedAction, actions]);
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'stretch', sm: 'center' },
+            gap: { xs: 1.5, sm: 2 },
+            width: '100%'
+        }}>
             <Tooltip title="Select Action">
-                <Button variant="outlined" size="small" onClick={openPopover} sx={{ minWidth: 220 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={openPopover}
+                    sx={{
+                        width: { xs: '100%', sm: 'auto' },
+                        minWidth: { sm: 220 }
+                    }}
+                >
                     {currentLabel}
                 </Button>
             </Tooltip>
@@ -86,7 +100,15 @@ const LogAction = () => {
                 onClose={closePopover}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                slotProps={{ paper: { sx: { maxHeight: 420, width: 320 } } }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            maxHeight: 420,
+                            width: { xs: '90vw', sm: 320 },
+                            maxWidth: '90vw'
+                        }
+                    }
+                }}
             >
                 <List dense disablePadding>
                     {Object.entries(grouped).map(([cat, arr]) => (
@@ -131,9 +153,18 @@ const LogAction = () => {
                 inputProps={{ step: 60 }}
                 disabled={selectedAction == null}
                 InputLabelProps={{ shrink: selectedAction != null }}
-                sx={{ minWidth: 130 }}
+                sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    minWidth: { sm: 130 }
+                }}
             />
-            <Button variant="contained" size="small" onClick={handleLog} disabled={selectedAction == null}>
+            <Button
+                variant="contained"
+                size="small"
+                onClick={handleLog}
+                disabled={selectedAction == null}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
                 Log Action
             </Button>
         </Box>
