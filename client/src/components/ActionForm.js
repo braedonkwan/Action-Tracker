@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { TextField, Button, Box } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import { TextField, Button, Box, Grid } from '@mui/material';
 import { DataContext } from '../context/DataContext';
 
 const ActionForm = ({ onSave, editAction, onCancel }) => {
@@ -36,42 +35,44 @@ const ActionForm = ({ onSave, editAction, onCancel }) => {
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mb: 2 }}>
-            <TextField
-                label="Action Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                variant="outlined"
-                fullWidth
-                required
-                sx={{ mb: 2 }}
-            />
-            <Autocomplete
-                freeSolo
-                options={categories}
-                value={category}
-                onChange={(_e, newValue) => setCategory(newValue || '')}
-                inputValue={category}
-                onInputChange={(_e, newInput) => setCategory(newInput)}
-                renderInput={(params) => (
+            <Grid container spacing={1.5} alignItems="center">
+                <Grid item xs={12} sm={6}>
                     <TextField
-                        {...params}
-                        label="Category"
+                        label="Action Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         variant="outlined"
                         fullWidth
                         required
+                        size="small"
+                        autoComplete="off"
                     />
-                )}
-            />
-            <Box sx={{ mt: 2 }}>
-                <Button type="submit" variant="contained" color="primary">
-                    {editAction ? 'Update Action' : 'Add Action'}
-                </Button>
-                {editAction && (
-                    <Button variant="text" color="secondary" onClick={onCancel} sx={{ ml: 2 }}>
-                        Cancel
-                    </Button>
-                )}
-            </Box>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        variant="outlined"
+                        fullWidth
+                        required
+                        size="small"
+                        autoComplete="off"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button type="submit" size="small" variant="contained" color="primary">
+                            {editAction ? 'Update Action' : 'Add Action'}
+                        </Button>
+                        {editAction && (
+                            <Button size="small" variant="text" color="secondary" onClick={onCancel}>
+                                Cancel
+                            </Button>
+                        )}
+                    </Box>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

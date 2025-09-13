@@ -15,7 +15,7 @@ const ActionPage = () => (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Paper sx={{ p: 2 }}>
                     <Typography variant="h6" gutterBottom>
-                        Log Your Actions
+                        Log Actions
                     </Typography>
                     <LogAction />
                 </Paper>
